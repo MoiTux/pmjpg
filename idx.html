@@ -1,0 +1,32 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <img id="image" width="100%" src="">
+    <script type="text/javascript">
+      myImage = document.querySelector('img');
+      urlObj = null
+
+      function getImg() {
+          fetch('/image?stream=true&&user={{.User}}&pwd={{.Pwd}}&addr={{.Addr}}', {
+              headers: {
+                  'X-Idx': '{{.Idx}}',
+              },
+          })
+          .then(function(response) {
+              if (!response.ok) {
+                  throw new Error('HTTP error! status: ${response.status}');
+              }
+              return response.blob();
+          })
+          .then(function (blob) {
+              if (urlObj != null) URL.revokeObjectURL(urlObj)
+              urlObj = URL.createObjectURL(blob)
+              myImage.src = urlObj
+          })
+          .then(getImg)
+      }
+      getImg()
+    </script>
+  </body>
+</html>
